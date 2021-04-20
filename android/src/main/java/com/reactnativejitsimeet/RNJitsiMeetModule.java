@@ -65,7 +65,7 @@ public class RNJitsiMeetModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void audioCall(String url, ReadableMap userInfo) {
+    public void audioCall(String url, boolean isMuted, ReadableMap userInfo) {
         UiThreadUtil.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -86,12 +86,23 @@ public class RNJitsiMeetModule extends ReactContextBaseJavaModule {
                             }
                           }
                     }
-                    RNJitsiMeetConferenceOptions options = new RNJitsiMeetConferenceOptions.Builder()
+                    if (isMuted) {
+                        RNJitsiMeetConferenceOptions options = new RNJitsiMeetConferenceOptions.Builder()
                             .setRoom(url)
                             .setAudioOnly(true)
+                            .setAudioMuted(true)
                             .setUserInfo(_userInfo)
                             .build();
-                    mJitsiMeetViewReference.getJitsiMeetView().join(options);
+                        mJitsiMeetViewReference.getJitsiMeetView().join(options);
+                    } else {
+                        RNJitsiMeetConferenceOptions options = new RNJitsiMeetConferenceOptions.Builder()
+                            .setRoom(url)
+                            .setAudioOnly(true)
+                            .setAudioMuted(false)
+                            .setUserInfo(_userInfo)
+                            .build();
+                        mJitsiMeetViewReference.getJitsiMeetView().join(options);
+                    }
                 }
             }
         });
